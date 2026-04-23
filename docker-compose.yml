@@ -31,6 +31,14 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # Para que Jenkins pueda usar Docker
     networks:
       - sales-network
+  # El nuevo integrante: SonarQube
+  sales-sonarqube:
+    image: sonarqube:lts-community
+    container_name: sales-sonarqube
+    ports:
+      - "9000:9000"
+    networks:
+      - sales-network
 
   sales-api:
     #build: No busques una imagen en internet; prepárate para construir una imagen nueva usando el archivo Dockerfile que está en esta misma carpeta
