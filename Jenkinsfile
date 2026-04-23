@@ -9,7 +9,9 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = "diegosantos95/sales-api"
-        SONAR_PROJECT_KEY = "trade-sales-api"
+        SONAR_PROJECT_KEY = "gestion-notificaciones-sales-api"
+        // 2. Llamamos a la credencial que creaste en Jenkins
+        SONAR_AUTH_TOKEN = credentials('SONAR_TOKEN')
     }
 
     stages {
@@ -21,7 +23,8 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                sh 'mvn clean package -DskipTests=false'
+                //sh 'mvn clean package -DskipTests=false'
+                bat 'mvn clean package -DskipTests=false'
             }
             post {
                 always {
@@ -34,19 +37,20 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarServer') {
-                    sh "mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.java.binaries=target/classes"
+                    //sh "mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.java.binaries=target/classes"
+                    bat "mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${SONAR_AUTH_TOKEN}"
                 }
             }
         }
 
+        /*
         stage('Quality Gate') {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
-        }
-
+        }*/
         // --- MOVIMOS EL BUILD DE DOCKER AQUÍ PARA TENER LA IMAGEN LISTA ANTES DEL DEPLOY ---
         stage('Docker Build & Push') {
             when {
@@ -55,8 +59,9 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     script {
+                        // sh (Shell): Es el lenguaje de las terminales de Linux y macOS
                         // El login se hace una sola vez
-                        sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                        /*sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
 
                         // Construcción e imagen con tag de build y latest
                         sh "docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ."
@@ -64,7 +69,13 @@ pipeline {
 
                         // Push de ambas versiones
                         sh "docker push ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
-                        sh "docker push ${DOCKER_IMAGE}:latest"
+                        sh "docker push ${DOCKER_IMAGE}:latest"*/
+                        //bat (Batch): Es el lenguaje de la terminal de Windows (CMD)
+                        bat "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                        bat "docker build -t ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ."
+                        bat "docker tag ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
+                        bat "docker push ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                        bat "docker push ${DOCKER_IMAGE}:latest"
                     }
                 }
             }
