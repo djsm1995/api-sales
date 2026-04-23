@@ -33,7 +33,11 @@ services:
       - sales-network
 
   sales-api:
+    #build: No busques una imagen en internet; prepárate para construir una imagen nueva usando el archivo Dockerfile que está en esta misma carpeta
     build: . # Esto le dice a Docker que use el 'Dockerfile' que tienes en la raíz
+    #Busca esta imagen ya construida en Docker Hub o Azure Container Registry y descárgala
+    #image: miunidaddigital.azurecr.io/sales-api:latest # <--- Agrega esto
+    image: diegosantos95/sales-api:latest
     container_name: sales-api
     ports:
       - "8082:8082"
