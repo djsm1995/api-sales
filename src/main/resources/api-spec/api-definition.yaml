@@ -1,0 +1,17 @@
+openapi: 3.0.3
+info:
+  title: Trade Integrated API
+  version: 1.0.0
+paths:
+  /api/v1/products:
+    get:
+      $ref: './catalog-spec.yaml#/paths/~1products/get'
+  /api/v1/sales:
+    post:
+      $ref: './sales-spec.yaml#/paths/~1sales/post'
+  /api/v1/audit/logs:
+    get:
+      $ref: './audit-spec.yaml#/paths/~1audit~1logs/get'
+  /api/v1/users:
+    post:
+      $ref: './users-spec.yaml#/paths/~1users/post'

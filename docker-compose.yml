@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  sales-mysql:
+    image: mysql:8.0
+    container_name: sales-mysql
+    environment:
+      MYSQL_DATABASE: sales_db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    volumes:
+      - sales_mysql_data:/var/lib/mysql
+    networks:
+      - sales-network
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: sales-jenkins
+    privileged: true
+    user: root
+    ports:
+      - "8083:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock # Para que Jenkins pueda usar Docker
+    networks:
+      - sales-network
+
+  sales-api:
+    build: . # Esto le dice a Docker que use el 'Dockerfile' que tienes en la raíz
+    container_name: sales-api
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      # OJO: Aquí 'localhost' no funciona dentro de Docker, usamos el nombre del servicio 'sales-mysql'
+      - SPRING_R2DBC_URL=r2dbc:mysql://sales-mysql:3306/sales_db
+      - SPRING_FLYWAY_URL=jdbc:mysql://sales-mysql:3306/sales_db
+    depends_on: #espera a que mysql levante para que no se caiga
+      sales-mysql:
+        condition: service_healthy
+    networks: #Esto es como crear un Switch Virtual privado para tus contenedores.
+      - sales-network
+
+
+networks:
+  sales-network: # Definición global de la red
+    driver: bridge
+
+volumes:
+  sales_mysql_data:
+  jenkins_data:

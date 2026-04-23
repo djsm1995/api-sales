@@ -1,0 +1,34 @@
+openapi: 3.0.3
+info:
+  title: Audit API
+  version: 1.0.0
+paths:
+  /audit/logs:
+    get:
+      summary: Consultar bitácora de auditoría
+      tags:
+        - Audit
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLogResponse'
+components:
+  schemas:
+    AuditLogResponse:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        entityName: { type: string, example: "products" }
+        entityId: { type: string, description: "UUID de la entidad afectada" }
+        action: { type: string, enum: [CREATE, UPDATE, DELETE] }
+        oldValue: { type: string, nullable: true }
+        newValue: { type: string, nullable: true }
+        performedBy: { type: string, format: uuid }
+        createdAt: { type: string, format: date-time }
+        ipAddress: { type: string, example: "192.168.1.1" }
+        userAgent: { type: string }

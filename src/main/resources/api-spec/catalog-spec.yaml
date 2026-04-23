@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info:
+  title: Catalog & Inventory API
+  version: 1.0.0
+paths:
+  /products:
+    get:
+      summary: Listar productos con stock
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductFullResponse'
+    post:
+      summary: Crear un nuevo producto
+      tags:
+        - Catalog
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: true
+          description: "UUID del usuario que crea el registro para auditoría"
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+      responses:
+        '201':
+          description: Producto creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductFullResponse'
+
+components:
+  schemas:
+    ProductRequest:
+      type: object
+      required: [sku, name, unitPrice, categoryId, unitMeasureId]
+      properties:
+        sku: { type: string, example: "POL-OVR-001" }
+        barcode: { type: string, example: "775123456701" }
+        name: { type: string, example: "Polo Oversize Algodón Pima" }
+        description: { type: string, maxLength: 100 }
+        imageUrl: { type: string, format: uri }
+        unitPrice: { type: number, format: decimal }
+        currency: { type: string, default: "PEN" }
+        applyIgv: { type: boolean, default: true }
+        categoryId: { type: integer, format: int64 }
+        unitMeasureId: { type: integer, format: int64 }
+
+    ProductFullResponse:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        sku: { type: string }
+        name: { type: string }
+        unitPrice: { type: number, format: decimal }
+        status: { type: string, enum: [ACTIVO, INACTIVO] }
+        createdAt: { type: string, format: date-time }
+        unitMeasure:
+          $ref: '#/components/schemas/UnitMeasureResponse'
+
+    UnitMeasureResponse:
+      type: object
+      properties:
+        name: { type: string, example: "Unidad" }
+        abbreviation: { type: string, example: "UND" }
+        allowsDecimal: { type: boolean }

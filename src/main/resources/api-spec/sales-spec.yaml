@@ -1,0 +1,45 @@
+openapi: 3.0.3
+info:
+  title: Sales API
+  version: 1.0.0
+paths:
+  /sales:
+    post:
+      summary: Registrar venta (Cabecera y Detalle)
+      tags:
+        - Sales
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+      responses:
+        '201':
+          description: Venta registrada exitosamente
+
+components:
+  schemas:
+    SaleRequest:
+      type: object
+      required: [userId, paymentMethod, items]
+      properties:
+        userId: { type: string, format: uuid }
+        customerId: { type: integer, format: int64, nullable: true }
+        paymentMethod: { type: string, enum: [EFECTIVO, TARJETA, YAPE, PLIN] }
+        series: { type: string, example: "B001" }
+        saleType: { type: string, enum: [BOLETA, FACTURA, NOTA_VENTA] }
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/SaleItemRequest'
+
+    SaleItemRequest:
+      type: object
+      required: [productId, quantity, unitPrice]
+      properties:
+        productId: { type: string, format: uuid }
+        quantity: { type: number, format: decimal, minimum: 0.001 }
+        unitPrice: { type: number, format: decimal, minimum: 0 }
+        discountAmount: { type: number, format: decimal, default: 0 }

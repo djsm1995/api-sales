@@ -1,0 +1,32 @@
+openapi: 3.0.3
+info:
+  title: Users API
+  version: 1.0.0
+paths:
+  /users:
+    post:
+      summary: Crear nuevo usuario
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '201':
+          description: Usuario creado exitosamente
+components:
+  schemas:
+    UserRequest:
+      type: object
+      required: [username, password, dni, role]
+      properties:
+        username: { type: string, maxLength: 50 }
+        password: { type: string, description: "Se recibirá en texto plano y se hasheará en el dominio" }
+        email: { type: string, format: email }
+        firstName: { type: string }
+        lastName: { type: string }
+        dni: { type: string, minLength: 8, maxLength: 8, example: "71234567" }
+        role: { type: string, enum: [ADMIN, CASHIER, USER] }
