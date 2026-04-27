@@ -7,7 +7,7 @@ RUN mvn clean package -DskipTests
 # Stage 2: Runtime
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/sales-*.jar app.jar
 
 # Actuator port
 EXPOSE 8082
