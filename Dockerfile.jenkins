@@ -1,0 +1,14 @@
+FROM jenkins/jenkins:lts
+# 1. Instalamos los plugins primero (como usuario jenkins)
+# Aquí puedes poner una lista separada por espacios
+RUN jenkins-plugin-cli --plugins \
+    docker-workflow \
+    blueocean \
+    sonarqube \
+    git \
+    workflow-aggregator \
+    pipeline-github-lib
+
+USER root
+RUN apt-get update && apt-get install -y docker.io && rm -rf /var/lib/apt/lists/*
+USER jenkins
