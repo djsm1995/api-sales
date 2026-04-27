@@ -4,7 +4,7 @@ FROM jenkins/jenkins:lts
 RUN jenkins-plugin-cli --plugins \
     docker-workflow \
     blueocean \
-    sonarqube \
+    sonar \
     git \
     workflow-aggregator \
     pipeline-github-lib
