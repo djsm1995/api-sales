@@ -62,7 +62,13 @@ pipeline {
         // --- MOVIMOS EL BUILD DE DOCKER AQUÍ PARA TENER LA IMAGEN LISTA ANTES DEL DEPLOY ---
         stage('Docker Build & Push') {
             when {
-                anyOf { branch 'master'; branch 'qa'; branch 'dev' }
+                // anyOf { branch 'master'; branch 'qa'; branch 'dev' }
+                expression {
+                     return env.BRANCH_NAME == 'master' ||
+                            env.BRANCH_NAME == 'dev' ||
+                            env.BRANCH_NAME == 'qa' ||
+                            env.GIT_BRANCH?.endsWith('master')
+                }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
@@ -88,7 +94,10 @@ pipeline {
         }
 
         stage('Deploy to DEV') {
-            when { branch 'dev' }
+            when {
+            //branch 'dev'
+            expression { return env.BRANCH_NAME == 'dev' || env.GIT_BRANCH?.endsWith('dev') }
+            }
             steps {
                 echo "Desplegando la imagen ${DOCKER_IMAGE}:${env.BUILD_NUMBER} al servidor de Desarrollo..."
                 // Aquí iría el comando: docker-compose up -d o kubectl apply
@@ -96,14 +105,19 @@ pipeline {
         }
 
         stage('Deploy to QA') {
-            when { branch 'qa' }
+            when {
+            //branch 'qa'
+            expression { return env.BRANCH_NAME == 'qa' || env.GIT_BRANCH?.endsWith('qa') }
+            }
             steps {
                 echo "Desplegando la imagen ${DOCKER_IMAGE}:${env.BUILD_NUMBER} al servidor de QA..."
             }
         }
 
         stage('Deploy to PROD') {
-            when { branch 'master' }
+            when {
+                expression { return env.BRANCH_NAME == 'master' || env.GIT_BRANCH?.endsWith('master') }
+            }
             steps {
                 echo "Desplegando la imagen ${DOCKER_IMAGE}:${env.BUILD_NUMBER} a Producción..."
             }
