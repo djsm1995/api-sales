@@ -1,0 +1,29 @@
+#Define cuántas réplicas de tu API quieres corriendo y qué imagen usar (diegosantos95/sales-api:latest)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-api
+  labels:
+    app: sales-api
+spec:
+  replicas: 2 # Escalabilidad: correremos dos instancias de tu API
+  selector:
+    matchLabels:
+      app: sales-api
+  template:
+    metadata:
+      labels:
+        app: sales-api
+    spec:
+      containers:
+        - name: sales-api
+          image: diegosantos95/sales-api:latest # Tu imagen de Docker Hub
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+            - name: SPRING_R2DBC_URL
+              value: "r2dbc:mysql://sales-mysql:3306/sales_db"
+            - name: SPRING_FLYWAY_URL
+              value: "jdbc:mysql://sales-mysql:3306/sales_db"

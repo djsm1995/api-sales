@@ -1,0 +1,13 @@
+#Expone tu API internamente o hacia afuera del clúster (usando un LoadBalancer o NodePort).
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-api-service
+spec:
+  selector:
+    app: sales-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8082
+  type: NodePort # Para acceder localmente en Minikube o Docker Desktop

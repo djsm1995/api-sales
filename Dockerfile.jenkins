@@ -10,5 +10,17 @@ RUN jenkins-plugin-cli --plugins \
     pipeline-github-lib
 
 USER root
-RUN apt-get update && apt-get install -y docker.io && rm -rf /var/lib/apt/lists/*
+
+# 2. Instalar Docker y Kubectl
+RUN apt-get update && \
+    apt-get install -y docker.io curl && \
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x kubectl && \
+    mv kubectl /usr/local/bin/ && \
+    rm -rf /var/lib/apt/lists/* \
+
+#RUN apt-get update && apt-get install -y docker.io && rm -rf /var/lib/apt/lists/*
+# 3. Permisos para que Jenkins use Docker
+RUN usermod -aG docker jenkins
+
 USER jenkins
