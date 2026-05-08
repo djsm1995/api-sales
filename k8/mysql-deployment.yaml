@@ -1,0 +1,40 @@
+# Este archivo lanza el contenedor de MySQL y conecta los secretos y el volumen.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-mysql
+spec:
+  selector:
+    matchLabels:
+      app: sales-mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sales-mysql
+    spec:
+      containers:
+        - image: mysql:8.0
+          name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: mysql-root-password
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-config
+                  key: database-name
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc

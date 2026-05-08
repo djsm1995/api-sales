@@ -1,0 +1,106 @@
+1. Desplegar la Base de Datos (MySQL)
+# 1. Primero las variables y secretos
+kubectl apply -f k8/mysql-env-config.yaml
+
+# 2. El almacenamiento
+kubectl apply -f k8/mysql-pvc.yaml
+
+# 3. La base de datos (que ya encontrará sus variables y disco listos)
+kubectl apply -f k8/mysql-deployment.yaml
+
+# 4. Tu API y su Service Desplegar tu Aplicación (sales-api)
+kubectl apply -f k8/sales-api-deployment.yaml
+kubectl apply -f k8/sales-api-service.yaml
+
+
+kubectl get pods
+ -Si estás usando Minikube (Dato extra):
+minikube service sales-api-service --url
+Esto te dará una URL (ejemplo: [http://192.168.49.2:31500]
+
+
+DOCKER:
+docker-compose up -d sales-api
+docker-compose up -d mysql
+docker-compose down
+
+
+A partir de ahora, tu comando de cabecera es kubectl.
+Para desplegar: kubectl apply -f k8/ (Kubernetes lee tus YAML, va a Docker Hub, baja la imagen y la levanta).
+Para ver qué pasa: kubectl get pods o kubectl logs [nombre-del-pod]
+
+
+=========================== Sales-API Service 🚀
+Este proyecto es un microservicio robusto para la gestión de ventas e inventarios, diseñado bajo principios de Arquitectura Hexagonal y Vertical Slicing para garantizar un desacoplamiento total y una alta mantenibilidad.
+
+🛠 Tecnologías y Stack
+Lenguaje: Java 21.
+
+Framework: Spring Boot 3.x con Spring WebFlux (Programación Reactiva).
+Base de Datos: MySQL con conectores R2DBC para persistencia no bloqueante.
+Migraciones: Flyway para el control de versiones de base de datos.
+Infraestructura: Docker y Kubernetes (K8s) para orquestación y escalabilidad.
+
+🏗 Arquitectura
+El proyecto implementa Arquitectura Hexagonal, separando el dominio de las dependencias externas (infraestructura y adaptadores).
+
+Domain: Lógica de negocio pura.
+
+Applications (Ports): Interfaces que definen cómo el mundo exterior interactúa con el dominio.
+
+Infrastructure (Adapters): Implementaciones técnicas como controladores REST, repositorios R2DBC y configuraciones de K8s.
+
+🚀 Despliegue en Kubernetes (K8s)
+El proyecto está preparado para ser orquestado completamente por Kubernetes, gestionando la persistencia, secretos y escalabilidad de forma automática.
+
+Requisitos previos
+Construir la imagen: docker build -t diegosantos95/sales-api:latest ..
+
+Subir la imagen: docker push diegosantos95/sales-api:latest.
+
+Pasos para levantar el entorno
+Desde la carpeta raíz, ejecuta los manifiestos en el orden de dependencia técnica:
+
+Bash
+# 1. Configuración y Secretos
+kubectl apply -f k8/mysql-config.yaml
+
+# 2. Persistencia de Datos (PVC)
+kubectl apply -f k8/mysql-pvc.yaml
+
+# 3. Base de Datos (Deployment y Service)
+kubectl apply -f k8/mysql-deployment.yaml
+kubectl apply -f k8/mysql-service.yaml
+
+# 4. Aplicación API (Deployment y Service)
+kubectl apply -f k8/sales-api-deployment.yaml
+kubectl apply -f k8/sales-api-service.yaml
+
+🔍 Monitoreo y Acceso
+Verificar pods: kubectl get pods.
+
+Acceso local (Minikube): minikube service sales-api-service --url.
+
+Logs de la aplicación: kubectl logs -f deployment/sales-api.
+
+👨‍💻 Autor
+Diego Santos Medina
+
+Fullstack Software Engineer & Integration Analyst.
+
+Especialista en Backend Integrations (Java/Spring Boot).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

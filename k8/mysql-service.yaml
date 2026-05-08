@@ -1,0 +1,12 @@
+# Muy importante: El metadata.name debe ser exactamente sales-mysql para que coincida
+# con la URL que pusiste en tu sales-api-deployment.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-mysql # Este nombre es el que usa la API para conectarse
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: sales-mysql
+  clusterIP: None # Usamos headless service para bases de datos

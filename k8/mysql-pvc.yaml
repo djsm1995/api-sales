@@ -1,0 +1,11 @@
+# Esto evita que tus ventas se borren si el contenedor de la base de datos se reinicia.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi # Espacio suficiente para pruebas

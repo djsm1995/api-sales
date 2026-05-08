@@ -51,7 +51,7 @@ services:
     image: diegosantos95/sales-api:latest
     container_name: sales-api
     ports:
-      - "8082:8082"
+      - "8084:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       # OJO: Aquí 'localhost' no funciona dentro de Docker, usamos el nombre del servicio 'sales-mysql'
@@ -63,7 +63,55 @@ services:
     networks: #Esto es como crear un Switch Virtual privado para tus contenedores.
       - sales-network
 
+  prometheus:
+    image: prom/prometheus
+    container_name: sales-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus # Persistencia de métricas
+    ports:
+      - "9090:9090"
+    networks:
+      - sales-network
+    depends_on:
+      - sales-api
 
+  grafana:
+    image: grafana/grafana
+    container_name: sales-grafana
+    volumes:
+      - grafana_data:/var/lib/grafana # Persistencia de dashboards y configuraciones
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - sales-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    container_name: sales-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # Límite de RAM para que no te trabe la PC
+    ports:
+      - "9200:9200"
+    networks:
+      - sales-network
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.10
+    container_name: sales-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - sales-network
+    depends_on:
+      - elasticsearch
 networks:
   sales-network: # Definición global de la red
     driver: bridge
@@ -71,3 +119,8 @@ networks:
 volumes:
   sales_mysql_data:
   jenkins_data:
+  prometheus_data:
+  grafana_data:
+  elasticsearch_data:
+# si apagas los contenedores con docker-compose down,
+# perderás tus datos. Es mejor añadir volúmenes

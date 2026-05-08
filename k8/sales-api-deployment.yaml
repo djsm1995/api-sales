@@ -14,6 +14,11 @@ spec:
     metadata:
       labels:
         app: sales-api
+      annotations:
+        # Estas anotaciones le dicen a Prometheus que este pod debe ser monitoreado
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8082"
     spec:
       containers:
         - name: sales-api
@@ -23,7 +28,44 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "docker"
+            # Configuración de Conexión (R2DBC para Reactividad)
             - name: SPRING_R2DBC_URL
               value: "r2dbc:mysql://sales-mysql:3306/sales_db"
             - name: SPRING_FLYWAY_URL
               value: "jdbc:mysql://sales-mysql:3306/sales_db"
+            # Credenciales para la conexión
+            - name: SPRING_R2DBC_USERNAME
+              value: "root"
+            - name: SPRING_R2DBC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: mysql-root-password
+            # Configuración de Migraciones (Flyway para Estructura)
+            - name: SPRING_FLYWAY_URL
+              value: "jdbc:mysql://sales-mysql:3306/sales_db"
+            - name: SPRING_FLYWAY_USER
+              value: "root"
+            - name: SPRING_FLYWAY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: mysql-root-password
+
+            # ¡CRUCIAL! Reintentos para evitar el 'Communications link failure'
+            - name: SPRING_FLYWAY_CONNECT_RETRIES
+              value: "10"
+
+          # Dentro de sales-api-deployment.yaml -> spec.template.spec.containers
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8082
+            initialDelaySeconds: 45    # dar tiempo al arranque de Java y la conexión a la base de datos
+            periodSeconds: 15         # Cada 15 segundos Kubernetes verificará si tu API sigue viva. Si no responde, la reiniciará automáticamente.
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8082
+            initialDelaySeconds: 45
+            periodSeconds: 15

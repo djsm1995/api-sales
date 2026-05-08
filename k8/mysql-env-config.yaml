@@ -1,0 +1,18 @@
+# Aquí definimos las credenciales. Es mejor usar un Secret para las contraseñas.
+# 1. Credenciales Sensibles (Secret)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secrets
+type: Opaque
+data:
+  # 'root' en base64 es: cm9vdA==
+  mysql-root-password: cm9vdA==
+---
+# 2. Configuración General (ConfigMap)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+data:
+  database-name: sales_db

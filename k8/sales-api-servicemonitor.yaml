@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: sales-api-monitor
+  labels:
+    release: prometheus # Esta etiqueta debe coincidir con la de tu instalación de Prometheus
+spec:
+  selector:
+    matchLabels:
+      app: sales-api # Busca el Service que tenga esta etiqueta
+  endpoints:
+  - port: http # Nombre del puerto definido en tu sales-api-service.yaml
+    path: /actuator/prometheus
+    interval: 25s

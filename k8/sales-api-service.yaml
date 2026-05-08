@@ -7,7 +7,13 @@ spec:
   selector:
     app: sales-api
   ports:
-    - protocol: TCP
-      port: 80
+    - name: http-web
+      protocol: TCP
+      port: 80          # Puerto de entrada tambien puede ser 8082 http://localhost/swagger-ui/index.html
+      targetPort: 8082  # ¡Debe ser el mismo que el port-forward! # Puerto donde corre tu app Spring Boot
+  #type: NodePort # Para acceder localmente en Minikube o Docker Desktop
+    - name: http-metrics  # <--- IMPORTANTE: Ponle nombre al puerto
+      protocol: TCP
+      port: 8082
       targetPort: 8082
-  type: NodePort # Para acceder localmente en Minikube o Docker Desktop
+  type: LoadBalancer   # En Docker Desktop, esto suele ser más estable que NodePort

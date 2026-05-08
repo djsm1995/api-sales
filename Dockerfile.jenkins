@@ -1,26 +1,25 @@
 FROM jenkins/jenkins:lts
-# 1. Instalamos los plugins primero (como usuario jenkins)
-# Aquí puedes poner una lista separada por espacios
+USER root
+
+# 1. Instalar Java 21 y Maven (Nativo en el SO)
+# También incluimos curl y software-properties-common por si acaso
+RUN apt-get update && \
+    apt-get install -y openjdk-21-jdk maven curl docker.io && \
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x kubectl && \
+    mv kubectl /usr/local/bin/ && \
+    rm -rf /var/lib/apt/lists/*
+
+# 2. Instalamos los plugins (Capa de persistencia de software)
 RUN jenkins-plugin-cli --plugins \
     docker-workflow \
     blueocean \
     sonar \
     git \
     workflow-aggregator \
-    pipeline-github-lib
-
-USER root
-
-# 2. Instalar Docker y Kubectl
-RUN apt-get update && \
-    apt-get install -y docker.io curl && \
-    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
-    chmod +x kubectl && \
-    mv kubectl /usr/local/bin/ && \
-    rm -rf /var/lib/apt/lists/* \
-
-#RUN apt-get update && apt-get install -y docker.io && rm -rf /var/lib/apt/lists/*
-# 3. Permisos para que Jenkins use Docker
+    pipeline-github-lib \
+    pipeline-stage-view
+# 3. Permisos
 RUN usermod -aG docker jenkins
 
 USER jenkins

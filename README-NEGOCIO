@@ -1,0 +1,46 @@
+🛒 Sales-API: Core de Negocio y Gestión de Ventas
+📌 Propósito del Sistema
+El objetivo principal de Sales-API es proporcionar una solución robusta y escalable para la automatización del ciclo de ventas y control de inventarios. El sistema actúa como el motor central que garantiza la integridad de las transacciones comerciales, desde el registro de productos hasta la consolidación de la venta final.
+
+💼 Dominios y Capacidades de Negocio
+Siguiendo los principios de Vertical Slicing, el sistema está dividido en capacidades de negocio independientes que permiten un crecimiento modular:
+
+1. Gestión de Catálogo e Inventario
+Control de Productos: Administración centralizada del catálogo, incluyendo descripciones, categorías y precios.
+
+Gestión de Stock: Seguimiento en tiempo real de las existencias para prevenir rupturas de stock o sobreventas.
+
+2. Procesamiento de Ventas
+Transaccionalidad Segura: Flujo de creación de ventas que asegura que cada operación sea atómica y veraz.
+
+Cálculo de Totales: Motor de cálculo para impuestos, descuentos y montos finales de transacción.
+
+3. Integración y Análisis
+Sincronización de Datos: Capacidad de integrarse con otros sistemas para mantener la coherencia de la información de ventas en todo el ecosistema empresarial.
+
+🏛 Filosofía de Diseño: El Negocio es lo Primero
+Este proyecto no se limita a "escribir código"; se basa en una mentalidad de Resultados con Propósito:
+
+Poder de lo Simple: Las reglas de negocio están diseñadas para ser claras y directas, evitando procesos burocráticos innecesarios dentro del sistema.
+
+Obsesión por el Valor: Cada funcionalidad desarrollada tiene como fin último mejorar la experiencia del usuario final y optimizar los recursos de la empresa.
+
+Autonomía Responsable: El sistema está diseñado para operar con una lógica de negocio sólida que minimice errores humanos en la carga de datos.
+
+🎯 Impacto Esperado
+Eficiencia Operativa: Reducción del tiempo manual dedicado al registro de transacciones.
+
+Transparencia: Visibilidad clara de los movimientos de inventario y flujo de caja de ventas.
+
+Escalabilidad: Preparado para soportar un alto volumen de transacciones conforme el negocio crezca.
+
+
+Resumen de Puertos de tu EcosistemaHas montado una suite completa de DevOps.
+ Aquí tienes tu "mapa de navegación":
+ Servicio       PuertoLocal    Función
+ SonarQube      9000            Análisis estático de código (Calidad).
+ Jenkins        8083            Automatización de Build y Deploy (CI/CD).
+ Prometheus     9090            Base de datos de métricas en tiempo real.
+ Grafana        3000            Visualización de datos (Dashboards).
+ Sales API      8082            Tu backend Java 21 / Spring Boot 3.
+ MySQL          3306            Base de datos relacional.
