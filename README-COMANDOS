@@ -1,4 +1,5 @@
 1. Desplegar la Base de Datos (MySQL)
+
 # 1. Primero las variables y secretos
 kubectl apply -f k8/mysql-env-config.yaml
 
