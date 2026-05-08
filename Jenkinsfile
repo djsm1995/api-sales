@@ -1,6 +1,6 @@
 // Ejemplo de sintaxis Groovy en un Jenkinsfile
 pipeline {
-    // agent any
+     agent any
     // CAMBIO: Ahora usamos la etiqueta 'windows' que configuraste en tu nodo principal
     // agent { label 'windows' }
 
