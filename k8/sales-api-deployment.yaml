@@ -6,7 +6,7 @@ metadata:
   labels:
     app: sales-api
 spec:
-  replicas: 2 # Escalabilidad: correremos dos instancias de tu API
+  replicas: 1 # Escalabilidad: correremos dos instancias de tu API
   selector:
     matchLabels:
       app: sales-api
@@ -23,6 +23,13 @@ spec:
       containers:
         - name: sales-api
           image: diegosantos95/sales-api:latest # Tu imagen de Docker Hub
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "768Mi" # Java 21 con Spring Boot corre cómodo aquí
+              cpu: "500m"
           ports:
             - containerPort: 8082
           env:
@@ -42,8 +49,8 @@ spec:
                   name: mysql-secrets
                   key: mysql-root-password
             # Configuración de Migraciones (Flyway para Estructura)
-            - name: SPRING_FLYWAY_URL
-              value: "jdbc:mysql://sales-mysql:3306/sales_db"
+#            - name: SPRING_FLYWAY_URL
+#              value: "jdbc:mysql://sales-mysql:3306/sales_db"
             - name: SPRING_FLYWAY_USER
               value: "root"
             - name: SPRING_FLYWAY_PASSWORD

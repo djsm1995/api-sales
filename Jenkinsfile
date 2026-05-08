@@ -1,14 +1,14 @@
 // Ejemplo de sintaxis Groovy en un Jenkinsfile
 pipeline {
-    //agent any
+    // agent any
     // CAMBIO: Ahora usamos la etiqueta 'windows' que configuraste en tu nodo principal
-    agent { label 'windows' }
+    // agent { label 'windows' }
 
     // 2. CAMBIO: Borramos la sección 'tools' porque Java y Maven ya están en el sistema
-    /*tools {
+    /* tools {
         maven 'maven-3.9'
         jdk 'jdk-21'
-    }*/
+    } */
 
     environment {
         DOCKER_IMAGE = "diegosantos95/sales-api"

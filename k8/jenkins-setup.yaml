@@ -26,6 +26,13 @@ spec:
       containers:
         - name: jenkins
           image: diegosantos95/sales-jenkins:latest
+          resources: # <--- AGREGAR AQUÍ
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
           imagePullPolicy: Always # En PROD siempre queremos la versión oficial del registro
           env:
             - name: DOCKER_HOST
@@ -40,7 +47,15 @@ spec:
         # EL INTEGRANTE DE PROD: Contenedor Sidecar de Docker
         - name: dind
           image: docker:dind
-          privileged: true
+          resources: # <--- AGREGAR AQUÍ (el sidecar también consume)
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+          securityContext:
+            privileged: true
           env:
             - name: DOCKER_TLS_CERTDIR
               value: "" # Deshabilitamos TLS para simplificar comunicación interna en el Pod
