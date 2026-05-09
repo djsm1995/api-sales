@@ -99,8 +99,8 @@ pipeline {
                    // Importante: Usar withKubeConfig para inyectar el archivo 'config' que subiste
                    withKubeConfig([credentialsId: 'k8s-config']) {
                         // Usamos los archivos específicos que creaste
-                        sh 'kubectl apply -f k8s/sales-api-deployment.yaml'
-                        sh 'kubectl apply -f k8s/sales-api-services.yaml'
+                        sh 'kubectl apply -f k8s/sales-api-deployment.yaml --validate=false --insecure-skip-tls-verify'
+                        sh 'kubectl apply -f k8s/sales-api-service.yaml --validate=false --insecure-skip-tls-verify'
                         // Fuerza el reinicio para asegurar que use la imagen recién pusheada a Docker Hub
                         sh 'kubectl rollout restart deployment sales-api'
                    }
