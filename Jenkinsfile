@@ -98,7 +98,12 @@ pipeline {
                 script {
                    // Importante: Usar withKubeConfig para inyectar el archivo 'config' que subiste
                    withKubeConfig([credentialsId: 'k8s-config']) {
-                        // Usamos los archivos específicos que creaste
+                        // 1. Primero la infraestructura de base de datos y configs
+                        sh 'kubectl apply -f k8s/mysql-env-config.yaml --validate=false --insecure-skip-tls-verify'
+                        sh 'kubectl apply -f k8s/mysql-pvc.yaml --validate=false --insecure-skip-tls-verify'
+                        sh 'kubectl apply -f k8s/mysql-deployment.yaml --validate=false --insecure-skip-tls-verify'
+                        sh 'kubectl apply -f k8s/mysql-service.yaml --validate=false --insecure-skip-tls-verify'
+                        // 2. Luego la aplicación (que ya encontrará sus secretos listos)
                         sh 'kubectl apply -f k8s/sales-api-deployment.yaml --validate=false --insecure-skip-tls-verify'
                         sh 'kubectl apply -f k8s/sales-api-service.yaml --validate=false --insecure-skip-tls-verify'
                         // Fuerza el reinicio para asegurar que use la imagen recién pusheada a Docker Hub
